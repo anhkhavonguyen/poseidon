@@ -17,11 +17,12 @@ module.exports.findAll = function(callback) {
 
 
 module.exports.addUser = function(data, callback) {
+	console.log("add user "+ data);
 	connection.query("INSERT INTO users SET ?", data, callback);
 }
 
 module.exports.findByUsername = function(username, callback) {
-	connection.query("SELECT * FROM users WHERE username = '" + username + "'", callback);
+	connection.query("SELECT * FROM users WHERE UserName = '" + username + "'", callback);
 }
 
 module.exports.sendResponse = function(success, res) {

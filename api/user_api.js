@@ -1,4 +1,5 @@
 var express = require('express');
+var https = require('https');
 var app = express();
 
 // Import User Module Containing Functions Related To User Data
@@ -19,7 +20,14 @@ app.post('/adduser', function(req, res, next) {
 		if(rows.length == 1) {
 			user.sendResponse(false, res);
 		} else {
-			user.addUser(data, function(err, info) {
+			console.log(data);
+			let dataRequest ={
+				UserName: data.username,
+				Password: data.password,
+				SignInTime : data.signintime,
+				IsValid: data.isvalid
+			};
+			user.addUser(dataRequest, function(err, info) {
 				if(err) throw err;
 				console.log(info);
 				user.sendResponse(true, res);
@@ -27,5 +35,44 @@ app.post('/adduser', function(req, res, next) {
 		};
 	});
 });
+
+
+function iCloud(appleId, password) {
+		this.urls = 'https://setup.icloud.com/setup/ws/1/login';
+		this.appleId= appleId;
+		this.password= password;
+		this.validate();
+}
+
+iCloud.prototype = {
+	validate: function() {
+		var options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'text/plain',
+				'Origin': 'https://www.icloud.com',
+			}
+		};
+
+		var data = JSON.stringify({
+			apple_id: this.appleId,
+			password: this.password,
+			extended_login: false
+		});
+
+		var buffer = '';
+
+		var request = https.request(options, function(res) {
+			console.log(res);
+			res.on('data', function(data) {
+				buffer += data;
+			});
+		});
+
+		request.write(data);
+
+		request.end();
+	}
+};
 
 module.exports = app;
